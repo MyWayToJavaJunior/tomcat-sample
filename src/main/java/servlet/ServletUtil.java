@@ -11,18 +11,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ServletUtil {
-    private static final String JSP_DIR = "/WEB-INF/jsp/";
-
-    public static void respond(HttpServletRequest request, HttpServletResponse response, String page) throws ServletException, IOException {
-        request.getRequestDispatcher(JSP_DIR + page + ".jsp").forward(request, response);
-    }
-
-    public static void json(HttpServletResponse response, Object obj, ExclusionStrategy strategy) throws IOException {
-        Gson gson = new GsonBuilder().addSerializationExclusionStrategy(strategy).create();
+    public static void respond(HttpServletResponse response, Object obj, ExclusionStrategy strategy) throws IOException {
+        Gson gson = strategy != null ? new GsonBuilder().addSerializationExclusionStrategy(strategy).create() : new Gson();
+        response.setContentType("application/json");
         response.getWriter().write(gson.toJson(obj));
     }
 
-    public static void jsonError(HttpServletResponse response, String message, int code) throws IOException {
+    public static void respondError(HttpServletResponse response, String message, int code) throws IOException {
+        response.setStatus(code);
+        response.setContentType("application/json");
         response.getWriter().write(new Gson().toJson(new Error(code, message)));
     }
 

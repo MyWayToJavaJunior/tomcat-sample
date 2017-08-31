@@ -1,6 +1,5 @@
 package servlet;
 
-import config.ContextConfig;
 import dataset.Article;
 import dbservice.ArticleDBService;
 
@@ -15,7 +14,7 @@ import java.util.List;
 /**
  * Created by infatigabilis on 30.08.17.
  */
-@WebServlet(name = "ArticleServlet", urlPatterns = "/articles")
+@WebServlet(name = "ArticleServlet", urlPatterns = "/api/articles")
 public class ArticleServlet extends HttpServlet {
     private ArticleDBService articleDBService = new ArticleDBService();
 
@@ -23,11 +22,6 @@ public class ArticleServlet extends HttpServlet {
         String author = request.getParameter("author");
         List<Article> result = author == null ? articleDBService.getAll() : articleDBService.getAllByAuthor(author);
 
-        if (ContextConfig.REST) ServletUtil.json(response, result, Article.GSON_STRAT_1);
-        else {
-            request.setAttribute("data", result);
-            request.setAttribute("title", author == null ? "All articles" : "Articles by " + author);
-            ServletUtil.respond(request, response, "article");
-        }
+        ServletUtil.respond(response, result, Article.GSON_STRAT_1);
     }
 }

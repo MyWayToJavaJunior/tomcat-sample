@@ -8,7 +8,9 @@ import org.hibernate.Session;
 public class UserDBService {
     public void save(User user) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
             new UserDAO(session).save(user);
+            session.flush();
         }
     }
 
@@ -21,6 +23,12 @@ public class UserDBService {
     public User get(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return new UserDAO(session).get(username);
+        }
+    }
+
+    public User getByToken(String token) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return new UserDAO(session).getByToken(token);
         }
     }
 }

@@ -1,7 +1,7 @@
 package servlet;
 
-import config.ContextConfig;
 import dataset.Article;
+import dataset.User;
 import dbservice.ArticleDBService;
 import dbservice.UserDBService;
 
@@ -15,27 +15,21 @@ import java.io.IOException;
 /**
  * Created by infatigabilis on 30.08.17.
  */
-@WebServlet(name = "AdminServlet", urlPatterns = "/admin/*")
+@WebServlet(name = "AdminServlet", urlPatterns = "/api/admin/*")
 public class AdminServlet extends HttpServlet {
     private final ArticleDBService articleDBService = new ArticleDBService();
     private final UserDBService userDBService = new UserDBService();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (!ContextConfig.REST && "delete".equals(request.getParameter("method"))) {
-            doDelete(request, response);
+        User user = userDBService.getByToken(request.getHeader("Token"));
+        if (user == null) {
+            ServletUtil.respondError(response, "Invalid token", 401);
             return;
         }
 
-        Article newArticle = new Article(request.getParameter("title"), request.getParameter("text"),
-                userDBService.get(request.getSession().getAttribute("principal").toString()));
+        Article newArticle = new Article(request.getParameter("title"), request.getParameter("text"), user);
 
         articleDBService.save(newArticle);
-        if (!ContextConfig.REST) doGet(request, response);
-    }
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("articles", articleDBService.getAllByAuthor(request.getSession().getAttribute("principal").toString()));
-        ServletUtil.respond(request, response, "admin");
     }
 
     @Override
@@ -44,16 +38,14 @@ public class AdminServlet extends HttpServlet {
         Article article = articleDBService.get(id);
 
         if (article == null) {
-            ServletUtil.jsonError(resp, "Object not found in DB", 404);
+            ServletUtil.respondError(resp, "Object not found in DB", 404);
             return;
         }
-        else if (!article.getUser().getUsername().equals(req.getSession().getAttribute("principal").toString())) {
-            if (ContextConfig.REST) ServletUtil.jsonError(resp, "Unauthorized", 401);
-            else resp.sendRedirect("/login");
+        else if (!article.getUser().getToken().equals(req.getHeader("Token"))) {
+            ServletUtil.respondError(resp, "Forbidden", 403);
             return;
         }
 
         articleDBService.delete(article);
-        if (!ContextConfig.REST) doGet(req, resp);
     }
 }

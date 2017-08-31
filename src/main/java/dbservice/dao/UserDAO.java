@@ -14,7 +14,7 @@ public class UserDAO extends DAO {
     }
 
     public void save(User userDataSet) {
-        session.save(userDataSet);
+        session.saveOrUpdate(userDataSet);
     }
 
     public User get(long id) {
@@ -26,6 +26,15 @@ public class UserDAO extends DAO {
         CriteriaQuery<User> criteria = builder.createQuery(User.class);
         Root<User> from = criteria.from(User.class);
         criteria.where(builder.equal(from.get("username"), username));
+        Query<User> query = session.createQuery(criteria);
+        return query.uniqueResult();
+    }
+
+    public User getByToken(String token) {
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<User> criteria = builder.createQuery(User.class);
+        Root<User> from = criteria.from(User.class);
+        criteria.where(builder.equal(from.get("token"), token));
         Query<User> query = session.createQuery(criteria);
         return query.uniqueResult();
     }

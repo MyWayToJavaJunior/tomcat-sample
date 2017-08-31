@@ -1,6 +1,5 @@
 package servlet;
 
-import config.ContextConfig;
 import dataset.User;
 import dbservice.UserDBService;
 
@@ -14,34 +13,31 @@ import java.io.IOException;
 /**
  * Created by infatigabilis on 30.08.17.
  */
-@WebServlet(name = "LoginServlet", urlPatterns = "/login")
+@WebServlet(name = "LoginServlet", urlPatterns = "/api/login")
 public class LoginServlet extends HttpServlet {
     private UserDBService userDBService = new UserDBService();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = userDBService.get(request.getParameter("username"));
         if (user == null) {
-            if (ContextConfig.REST) ServletUtil.jsonError(response, "Wrong username", 400);
-            else {
-                request.setAttribute("error", "Wrong username");
-                ServletUtil.respond(request, response, "login");
-            }
+            ServletUtil.respondError(response, "Wrong username", 400);
         }
         else if (!User.PASSWORD_ENCODER.matches(request.getParameter("password"), user.getPassword())) {
-            if (ContextConfig.REST) ServletUtil.jsonError(response, "Wrong password", 400);
-            else {
-                request.setAttribute("error", "Wrong password");
-                ServletUtil.respond(request, response, "login");
-            }
+            ServletUtil.respondError(response, "Wrong password", 400);
         }
 
-        if (ContextConfig.REST) return;
-
-        request.getSession().setAttribute("principal", request.getParameter("username"));
-        response.sendRedirect("/admin");
+        user.generateToken();
+        userDBService.save(user);
+        ServletUtil.respond(response, new Token(user.getUsername(), user.getToken()), null);
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ServletUtil.respond(request, response, "login");
+    class Token {
+        private String username;
+        private String token;
+
+        public Token(String username, String token) {
+            this.username = username;
+            this.token = token;
+        }
     }
 }
