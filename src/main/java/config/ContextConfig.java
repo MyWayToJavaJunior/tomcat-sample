@@ -1,8 +1,10 @@
 package config;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Properties;
 
 public class ContextConfig {
@@ -11,9 +13,8 @@ public class ContextConfig {
     static {
         Properties properties = new Properties();
         try {
-            // TODO: fix path
-            properties.load(new FileInputStream("/home/infatigabilis/Code/Education/Tomcat Sample/config.properties"));
-        } catch (IOException e) {
+            properties.load(new FileInputStream(new File(ContextConfig.class.getClassLoader().getResource("config.properties").toURI())));
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
