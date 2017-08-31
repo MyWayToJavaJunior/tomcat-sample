@@ -7,7 +7,6 @@ import java.util.Properties;
 
 public class ContextConfig {
     public static boolean DEV;
-    public static boolean REST;
 
     static {
         Properties properties = new Properties();
@@ -18,6 +17,5 @@ public class ContextConfig {
         }
 
         DEV = Boolean.parseBoolean(properties.getProperty("dev"));
-        REST = Boolean.parseBoolean(properties.getProperty("rest"));
     }
 }

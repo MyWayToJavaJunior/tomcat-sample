@@ -21,7 +21,7 @@ public class AdminServlet extends HttpServlet {
     private final UserDBService userDBService = new UserDBService();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (!ContextConfig.REST && "delete".equals(request.getParameter("method"))) {
+        if ("delete".equals(request.getParameter("method"))) {
             doDelete(request, response);
             return;
         }
@@ -30,7 +30,7 @@ public class AdminServlet extends HttpServlet {
                 userDBService.get(request.getSession().getAttribute("principal").toString()));
 
         articleDBService.save(newArticle);
-        if (!ContextConfig.REST) doGet(request, response);
+        doGet(request, response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -44,16 +44,15 @@ public class AdminServlet extends HttpServlet {
         Article article = articleDBService.get(id);
 
         if (article == null) {
-            ServletUtil.jsonError(resp, "Object not found in DB", 404);
+            resp.sendError(404);
             return;
         }
         else if (!article.getUser().getUsername().equals(req.getSession().getAttribute("principal").toString())) {
-            if (ContextConfig.REST) ServletUtil.jsonError(resp, "Unauthorized", 401);
-            else resp.sendRedirect("/login");
+            resp.sendRedirect("/login");
             return;
         }
 
         articleDBService.delete(article);
-        if (!ContextConfig.REST) doGet(req, resp);
+        doGet(req, resp);
     }
 }

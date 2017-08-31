@@ -23,11 +23,8 @@ public class ArticleServlet extends HttpServlet {
         String author = request.getParameter("author");
         List<Article> result = author == null ? articleDBService.getAll() : articleDBService.getAllByAuthor(author);
 
-        if (ContextConfig.REST) ServletUtil.json(response, result, Article.GSON_STRAT_1);
-        else {
-            request.setAttribute("data", result);
-            request.setAttribute("title", author == null ? "All articles" : "Articles by " + author);
-            ServletUtil.respond(request, response, "article");
-        }
+        request.setAttribute("data", result);
+        request.setAttribute("title", author == null ? "All articles" : "Articles by " + author);
+        ServletUtil.respond(request, response, "article");
     }
 }

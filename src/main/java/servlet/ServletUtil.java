@@ -16,23 +16,4 @@ public class ServletUtil {
     public static void respond(HttpServletRequest request, HttpServletResponse response, String page) throws ServletException, IOException {
         request.getRequestDispatcher(JSP_DIR + page + ".jsp").forward(request, response);
     }
-
-    public static void json(HttpServletResponse response, Object obj, ExclusionStrategy strategy) throws IOException {
-        Gson gson = new GsonBuilder().addSerializationExclusionStrategy(strategy).create();
-        response.getWriter().write(gson.toJson(obj));
-    }
-
-    public static void jsonError(HttpServletResponse response, String message, int code) throws IOException {
-        response.getWriter().write(new Gson().toJson(new Error(code, message)));
-    }
-
-    static class Error {
-        private final int code;
-        private final String error;
-
-        public Error(int code, String error) {
-            this.code = code;
-            this.error = error;
-        }
-    }
 }

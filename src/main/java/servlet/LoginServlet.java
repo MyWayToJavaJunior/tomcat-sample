@@ -21,21 +21,13 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = userDBService.get(request.getParameter("username"));
         if (user == null) {
-            if (ContextConfig.REST) ServletUtil.jsonError(response, "Wrong username", 400);
-            else {
-                request.setAttribute("error", "Wrong username");
-                ServletUtil.respond(request, response, "login");
-            }
+            request.setAttribute("error", "Wrong username");
+            ServletUtil.respond(request, response, "login");
         }
         else if (!User.PASSWORD_ENCODER.matches(request.getParameter("password"), user.getPassword())) {
-            if (ContextConfig.REST) ServletUtil.jsonError(response, "Wrong password", 400);
-            else {
-                request.setAttribute("error", "Wrong password");
-                ServletUtil.respond(request, response, "login");
-            }
+            request.setAttribute("error", "Wrong password");
+            ServletUtil.respond(request, response, "login");
         }
-
-        if (ContextConfig.REST) return;
 
         request.getSession().setAttribute("principal", request.getParameter("username"));
         response.sendRedirect("/admin");
