@@ -40,7 +40,7 @@ public class Article {
         this.user = user;
     }
 
-    public static final ExclusionStrategy GSON_STRAT_1 = new ExclusionStrategy() {
+    public static final ExclusionStrategy MIN_STRAT = new ExclusionStrategy() {
         @Override
         public boolean shouldSkipField(FieldAttributes f) {
             return f.getName().equals("user");

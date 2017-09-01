@@ -7,6 +7,7 @@ import dbservice.dao.UserDAO;
 import org.hibernate.Session;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ArticleDBService {
     public void save(Article article) {
@@ -15,9 +16,9 @@ public class ArticleDBService {
         }
     }
 
-    public Article get(long id) {
+    public Optional<Article> get(long id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return new ArticleDAO(session).get(id);
+            return Optional.of(new ArticleDAO(session).get(id));
         }
     }
 

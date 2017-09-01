@@ -5,6 +5,8 @@ import db.HibernateUtil;
 import dbservice.dao.UserDAO;
 import org.hibernate.Session;
 
+import java.util.Optional;
+
 public class UserDBService {
     public void save(User user) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -20,9 +22,9 @@ public class UserDBService {
         }
     }
 
-    public User get(String username) {
+    public Optional<User> get(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return new UserDAO(session).get(username);
+            return Optional.of(new UserDAO(session).get(username));
         }
     }
 
