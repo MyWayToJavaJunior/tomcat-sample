@@ -18,8 +18,4 @@
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
-    <listener>
-        <listener-class>config.BeanConfig</listener-class>
-    </listener>
-
 </web-app>
