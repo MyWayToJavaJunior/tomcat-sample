@@ -1,5 +1,10 @@
 package config;
 
+import dbservice.ArticleDBService;
+import dbservice.UserDBService;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

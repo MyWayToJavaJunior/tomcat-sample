@@ -4,11 +4,13 @@ import lombok.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Data @Builder @NoArgsConstructor @AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor
 @Entity @Table(name = "users")
 public class User {
     public static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
@@ -19,14 +21,28 @@ public class User {
     @NonNull @Column(unique = true, nullable = false)
     private String username;
 
+    @NonNull @Column(nullable = false)
     private String password;
 
-    @Builder.Default private String token = UUID.randomUUID().toString();
+    @NonNull @Enumerated(EnumType.STRING)
+    private Role role;
+
+    private String token;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @Builder.Default private List<Article> articles = new ArrayList<>();
+    private List<Article> articles = new ArrayList<>();
 
     public void generateToken() {
         this.token = UUID.randomUUID().toString();
+    }
+
+    public User(String username, String password, Role role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
+    public enum Role {
+        ADMIN, USER
     }
 }

@@ -4,8 +4,9 @@ import dataset.Article;
 import dataset.User;
 import dbservice.ArticleDBService;
 import dbservice.UserDBService;
+import org.springframework.beans.factory.annotation.Autowired;
+import rest.base.Secured;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -14,14 +15,13 @@ import javax.ws.rs.core.SecurityContext;
 import java.io.IOException;
 import java.util.List;
 
-import static rest.RestUtil.respond;
 
 @Path("/api/articles")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class ArticleService {
-    private final ArticleDBService articleDBService = new ArticleDBService();
-    private final UserDBService userDBService = new UserDBService();
+public class ArticleService extends RestService {
+    @Autowired private ArticleDBService articleDBService;
+    @Autowired private UserDBService userDBService;
 
     @GET @Path("{author}")
     public String get(@PathParam("author") String author) throws IOException {
@@ -30,7 +30,7 @@ public class ArticleService {
     }
 
     @POST
-    @RolesAllowed("USER")
+    @Secured(User.Role.USER)
     public Response add(Article article, @Context SecurityContext ctx) {
         User user = userDBService.get(ctx.getUserPrincipal().getName()).get();
         article.setUser(user);
@@ -40,10 +40,13 @@ public class ArticleService {
     }
 
     @DELETE @Path("{id}")
-    @RolesAllowed("USER")
+    @Secured({User.Role.USER, User.Role.ADMIN})
     public Response destroy(@PathParam("id") long id, @Context SecurityContext ctx) {
         Article article = articleDBService.get(id).orElseThrow(() -> new NotFoundException());
-        if (!article.getUser().getUsername().equals(ctx.getUserPrincipal().getName())) throw new ForbiddenException();
+
+        User user = userDBService.get(ctx.getUserPrincipal().getName()).get();
+        if (!user.getRole().equals(User.Role.ADMIN) && !article.getUser().getUsername().equals(user.getUsername()))
+            throw new ForbiddenException();
 
         articleDBService.delete(article);
         return Response.ok().build();

@@ -24,13 +24,13 @@ public class UserDBService {
 
     public Optional<User> get(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return Optional.of(new UserDAO(session).get(username));
+            return Optional.ofNullable(new UserDAO(session).get(username));
         }
     }
 
-    public User getByToken(String token) {
+    public Optional<User> getByToken(String token) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return new UserDAO(session).getByToken(token);
+            return Optional.ofNullable(new UserDAO(session).getByToken(token));
         }
     }
 }

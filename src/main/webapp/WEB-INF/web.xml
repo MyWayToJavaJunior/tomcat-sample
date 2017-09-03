@@ -5,17 +5,21 @@
          version="3.1">
 
     <servlet>
-        <servlet-name>Resteasy</servlet-name>
+        <servlet-name>JAXRS</servlet-name>
         <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
-        <load-on-startup>1</load-on-startup>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
             <param-value>Main</param-value>
         </init-param>
     </servlet>
+
     <servlet-mapping>
-        <servlet-name>Resteasy</servlet-name>
+        <servlet-name>JAXRS</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
+
+    <listener>
+        <listener-class>config.BeanConfig</listener-class>
+    </listener>
 
 </web-app>

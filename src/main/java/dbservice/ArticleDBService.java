@@ -18,7 +18,7 @@ public class ArticleDBService {
 
     public Optional<Article> get(long id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return Optional.of(new ArticleDAO(session).get(id));
+            return Optional.ofNullable(new ArticleDAO(session).get(id));
         }
     }
 

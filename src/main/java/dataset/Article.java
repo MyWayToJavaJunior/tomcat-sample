@@ -12,27 +12,26 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.util.Date;
 
-@Data @Builder @NoArgsConstructor @AllArgsConstructor
+@Data @Builder @AllArgsConstructor
 @Entity @Table(name = "articles", indexes = @Index(name = "article_user", columnList = "user_id"))
 public class Article {
-    @Expose
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Expose
     private String title;
 
     @Type(type = "text")
-    @Expose
     private String text;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Expose
     @Builder.Default private Date createdAt = new Date();
 
-    @ManyToOne @JoinColumn(name = "user_id")
-    @Expose(serialize = false)
+    @ManyToOne @JoinColumn(name = "user_id", nullable = false, updatable = false)
     private User user;
+
+    public Article() {
+        this.createdAt = new Date();
+    }
 
     public Article(String title, String text, User user) {
         this.title = title;

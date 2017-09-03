@@ -2,19 +2,19 @@ package rest;
 
 import dataset.User;
 import dbservice.UserDBService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import java.io.IOException;
 
-import static rest.RestUtil.respond;
 
 @Path("/api/auth")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class AuthService {
-    private UserDBService userDBService = new UserDBService();
+public class AuthService extends RestService {
+    @Autowired private UserDBService userDBService;
 
     @POST @Path("login")
     public String login(Creditional creditional) throws IOException {
