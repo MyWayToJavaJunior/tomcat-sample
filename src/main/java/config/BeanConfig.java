@@ -13,9 +13,6 @@ import javax.servlet.annotation.WebListener;
 
 @Configuration
 public class BeanConfig {
-    public static ApplicationContext getContext() {
-        return new AnnotationConfigApplicationContext(BeanConfig.class);
-    }
 
     @Bean
     public ArticleDBService articleDBService() {

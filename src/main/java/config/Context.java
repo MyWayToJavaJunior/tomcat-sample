@@ -10,6 +10,7 @@ public class Context {
     private Context() {}
 
     public static ApplicationContext instance() {
-        return applicationContext != null ? applicationContext : new AnnotationConfigApplicationContext(BeanConfig.class);
+        if (applicationContext == null) applicationContext = new AnnotationConfigApplicationContext(BeanConfig.class);
+        return applicationContext;
     }
 }
